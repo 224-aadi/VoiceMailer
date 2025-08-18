@@ -26,8 +26,8 @@ A Flutter application that allows users to record voice messages and send them v
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/voice_mailer_new.git
-   cd voice_mailer_new
+   git clone https://github.com/yourusername/VoiceMailer.git
+   cd VoiceMailer
    ```
 
 2. **Install dependencies**
@@ -140,3 +140,5 @@ If you encounter any issues or have questions:
 ---
 
 **Note**: Make sure to replace `yourusername` with your actual GitHub username in the URLs above.
+
+**Repository Name**: `VoiceMailer` (note the capital letters)

@@ -12,10 +12,10 @@ This guide will help you set up your Voice Mailer project on GitHub.
 
 If you haven't already initialized Git in your project:
 
-```bash
-cd voice_mailer_new
-git init
-```
+   ```bash
+   cd VoiceMailer
+   git init
+   ```
 
 ## Step 2: Add Files to Git
 
@@ -33,7 +33,7 @@ git commit -m "Initial commit: Voice Mailer Flutter app"
 2. Click the "+" icon in the top right
 3. Select "New repository"
 4. Fill in:
-   - Repository name: `voice_mailer_new`
+   - Repository name: `VoiceMailer`
    - Description: `A Flutter application for recording voice messages and sending them via email with speech-to-text transcription`
    - Make it Public or Private (your choice)
    - **DO NOT** initialize with README, .gitignore, or license (we already have these)
@@ -43,7 +43,7 @@ git commit -m "Initial commit: Voice Mailer Flutter app"
 
 ```bash
 # Add the remote origin (replace YOUR_USERNAME with your GitHub username)
-git remote add origin https://github.com/YOUR_USERNAME/voice_mailer_new.git
+   git remote add origin https://github.com/YOUR_USERNAME/VoiceMailer.git
 
 # Push to GitHub
 git branch -M main
@@ -150,7 +150,7 @@ git config --global user.email "your-email@example.com"
 
 ### If you need to change remote URL:
 ```bash
-git remote set-url origin https://github.com/YOUR_USERNAME/voice_mailer_new.git
+   git remote set-url origin https://github.com/YOUR_USERNAME/VoiceMailer.git
 ```
 
 ### If you need to force push (be careful):

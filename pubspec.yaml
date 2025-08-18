@@ -55,6 +55,7 @@ dependencies:
   speech_to_text:
   audio_waveforms:
   rename_app:
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
