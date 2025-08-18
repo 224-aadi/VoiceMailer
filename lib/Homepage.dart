@@ -19,6 +19,8 @@ import 'package:voice_mailer_new/config/env.dart';
 //Add Snackbar errors for each error
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -47,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _checkPermission();
-    get_email();
+    getEmail();
   }
 
   @override
@@ -57,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  void get_email() async {
+  void getEmail() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
       givenEmail = prefs.getString('email') ?? 'Enter Email';
@@ -80,8 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       if (await record.hasPermission()) {
         final directory = await getExternalStorageDirectory();
-        String time_atRecording = DateTime.now().toString();
-        String _recordingPath = '${directory?.path}/$time_atRecording.m4a';
+        String timeAtRecording = DateTime.now().toString();
+        String recordingPath = '${directory?.path}/$timeAtRecording.m4a';
 
         await record.start(
           RecordConfig(
@@ -90,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
             sampleRate: 44100,
             numChannels: 2,
           ),
-          path: _recordingPath,
+          path: recordingPath,
         );
 
         setState(() {
@@ -140,10 +142,10 @@ class _HomeScreenState extends State<HomeScreen> {
       final path = await record.stop();
       String fileName = path.toString().split('/').last;
       int dotIndex = fileName.indexOf('.');
-      String time_ofPath =
+      String timeOfPath =
           fileName.substring(0, dotIndex); // Extract the file name till '.'
-      final wavPath = await _convertToWav(path.toString(), time_ofPath);
-      _recognizeSpeech(wavPath.toString(), time_ofPath);
+      final wavPath = await _convertToWav(path.toString(), timeOfPath);
+      _recognizeSpeech(wavPath.toString(), timeOfPath);
       setState(() {
         _isRecording = false;
         _debugText = 'Recording stopped. File saved at: $path';
@@ -155,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<String?> _convertToWav(String m4aPath, time) async {
+  Future<String?> _convertToWav(String m4aPath, String time) async {
     final directory = await getExternalStorageDirectory();
     final wavPath = '${directory?.path}/$time.wav';
 
@@ -170,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _recognizeSpeech(String filePath, time) async {
+  Future<void> _recognizeSpeech(String filePath, String time) async {
     // Check internet connectivity
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
@@ -229,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void saveTranscription(time) async {
+  void saveTranscription(String time) async {
     //Save the text as a .txt file as well
     final directory = await getExternalStorageDirectory();
     final txtPath = '${directory?.path}/$time.txt';
