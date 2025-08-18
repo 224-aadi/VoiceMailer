@@ -306,9 +306,11 @@ class SavedRecordingsState extends State<SavedRecordings> {
 
                             if (!(result == ConnectivityResult.none)) {
                               debugPrint('Valid Internet Connection');
+                              // ignore: use_build_context_synchronously
                               _sendEmailWithAttachment(
                                   audioFile.path.toString(),
                                   transcript,
+                                  // ignore: use_build_context_synchronously
                                   scaffoldContext);
                             } else {
                               debugPrint(result.toString());
@@ -330,7 +332,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
                             color: Colors.blue,
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             alignment: Alignment.centerRight,
-                            child: Icon(
+                            child: const Icon(
                               Icons.email,
                               color: Colors.white,
                               size: 30,
@@ -397,7 +399,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
             );
           }
         },
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',

@@ -52,9 +52,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             thickness: 1.5,
           ),
           ListTile(
-            leading: Icon(Icons.email),
+            leading: const Icon(Icons.email),
             title: Text('Change Email'),
-            trailing: Icon(Icons.arrow_forward_ios),
+            trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
               Navigator.push(
                 context,
@@ -67,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.brightness_6),
+            leading: const Icon(Icons.brightness_6),
             title: Text('Theme'),
             trailing: const SizedBox(
               width: 50,
@@ -86,7 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.security),
+            leading: const Icon(Icons.security),
             title: Text('Permissions'),
             trailing: Text('Granted'),
             onTap: () {
@@ -95,7 +95,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.support),
+            leading: const Icon(Icons.support),
             title: Text('Contact Support'),
             onTap: () {
               // Contact support
@@ -128,7 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Stay on the same page (Settings)
           }
         },
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',

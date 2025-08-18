@@ -304,14 +304,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 8),
               _isRecording
-                  ? Container(
+                  ? // ignore: sized_box_for_whitespace
+                  SizedBox(
                       height: 200,
                       child: CustomPaint(
                         painter: BarcodeWaveformPainter(_amplitudeHistory),
                         size: Size(MediaQuery.of(context).size.width - 32, 200),
                       ),
                     )
-                  : Container(),
+                  : const SizedBox.shrink(),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isRecording ? _stopRecording : _startRecording,
@@ -342,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             _isGenerating
                                 ? CircularProgressIndicator()
-                                : Container(),
+                                : const SizedBox.shrink(),
                             const SizedBox(height: 16),
                             Text(
                               _recognitionResult,
@@ -358,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     )
-                  : Container(),
+                  : const SizedBox.shrink(),
             ],
           ),
         ),
