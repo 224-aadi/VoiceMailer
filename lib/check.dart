@@ -3,15 +3,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:voice_mailer_new/Homepage.dart';
+import 'package:voice_mailer_new/homepage.dart';
 import 'login.dart';
 // import 'main.dart';
 
-class checking extends StatefulWidget {
-  _checking createState() => _checking();
+class Checking extends StatefulWidget {
+  const Checking({super.key});
+  
+  @override
+  State<Checking> createState() => _CheckingState();
 }
 
-class _checking extends State<checking> {
+class _CheckingState extends State<Checking> {
   late SharedPreferences prefs;
   //String email;
   late bool newuser;
@@ -19,14 +22,14 @@ class _checking extends State<checking> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    check_if_already_login();
+    checkIfAlreadyLogin();
   }
 
-  void check_if_already_login() async {
+  void checkIfAlreadyLogin() async {
     prefs = await SharedPreferences.getInstance();
     //email = prefs.getString('name');
     newuser = (prefs.getBool('login') ?? true);
-    print(newuser);
+    debugPrint(newuser.toString());
     if (newuser == false) {
       Timer(const Duration(seconds: 3), () {
         Navigator.pushReplacement(
@@ -35,7 +38,7 @@ class _checking extends State<checking> {
     } else {
       Timer(const Duration(seconds: 3), () {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => login()));
+            context, MaterialPageRoute(builder: (context) => const Login()));
       });
     }
   }

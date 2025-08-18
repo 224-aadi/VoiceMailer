@@ -3,17 +3,19 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:voice_mailer_new/Homepage.dart';
+import 'package:voice_mailer_new/homepage.dart';
 import 'package:voice_mailer_new/change_email.dart';
 import 'package:voice_mailer_new/main.dart';
 import 'package:voice_mailer_new/saved.dart';
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
-  _SettingsScreen createState() => _SettingsScreen();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreen extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> {
   TextEditingController email = TextEditingController();
   late SharedPreferences prefs;
   late String givenEmail;
@@ -24,14 +26,16 @@ class _SettingsScreen extends State<SettingsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    get_email();
+    getEmail();
   }
 
-  void get_email() async {
+  void getEmail() async {
     prefs = await SharedPreferences.getInstance();
-    setState(() {
-      givenEmail = prefs.getString('email') ?? 'Enter Email';
-    });
+    if (mounted) {
+      setState(() {
+        givenEmail = prefs.getString('email') ?? 'Enter Email';
+      });
+    }
   }
 
   @override
@@ -44,7 +48,7 @@ class _SettingsScreen extends State<SettingsScreen> {
       ),
       body: ListView(
         children: [
-          Divider(
+          const Divider(
             thickness: 1.5,
           ),
           ListTile(
@@ -61,24 +65,18 @@ class _SettingsScreen extends State<SettingsScreen> {
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             leading: Icon(Icons.brightness_6),
             title: Text('Theme'),
-            trailing: SizedBox(
+            trailing: const SizedBox(
               width: 50,
               height: 40,
               child: FittedBox(
                 fit: BoxFit.fill,
                 child: Switch(
-                  value: AdaptiveTheme.of(context).mode.isDark,
-                  onChanged: (value) {
-                    if (value) {
-                      AdaptiveTheme.of(context).setDark();
-                    } else {
-                      AdaptiveTheme.of(context).setLight();
-                    }
-                  },
+                  value: false,
+                  onChanged: null,
                 ),
               ),
             ),
@@ -86,7 +84,7 @@ class _SettingsScreen extends State<SettingsScreen> {
               // Theme setting
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             leading: Icon(Icons.security),
             title: Text('Permissions'),
@@ -95,7 +93,7 @@ class _SettingsScreen extends State<SettingsScreen> {
               // Permissions setting
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             leading: Icon(Icons.support),
             title: Text('Contact Support'),
@@ -103,7 +101,7 @@ class _SettingsScreen extends State<SettingsScreen> {
               // Contact support
             },
           ),
-          Divider(
+          const Divider(
             thickness: 1.5,
           )
         ],
@@ -118,13 +116,13 @@ class _SettingsScreen extends State<SettingsScreen> {
           if (index == 0) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
               (Route<dynamic> route) => false,
             );
           } else if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SavedRecordings()),
+              MaterialPageRoute(builder: (context) => const SavedRecordings()),
             );
           } else if (index == 2) {
             // Stay on the same page (Settings)

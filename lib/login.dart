@@ -1,15 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:voice_mailer_new/Homepage.dart';
+import 'package:voice_mailer_new/homepage.dart';
 // import 'main.dart';
 
-class login extends StatefulWidget {
+class Login extends StatefulWidget {
+  const Login({super.key});
+  
   @override
-  _login createState() => _login();
+  State<Login> createState() => _LoginState();
 }
 
-class _login extends State<login> {
+class _LoginState extends State<Login> {
   TextEditingController email = TextEditingController();
 
   Future<void> complete() async {
@@ -17,8 +19,10 @@ class _login extends State<login> {
     prefs.setBool('login', false);
     prefs.setString('email', email.text.toString());
     // ignore: use_build_context_synchronously
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+    if (mounted) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) => const HomeScreen()));
+    }
   }
 
   @override

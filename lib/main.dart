@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         title: 'VoiceMailer',
         theme: theme,
         darkTheme: darkTheme,
-        home: checking(),
+        home: const Checking(),
         debugShowCheckedModeBanner: false,
       ),
       debugShowFloatingThemeButton: false,

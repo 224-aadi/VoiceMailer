@@ -8,12 +8,14 @@ import 'package:path_provider/path_provider.dart';
 // import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:voice_mailer_new/Homepage.dart';
+import 'package:voice_mailer_new/homepage.dart';
 import 'package:voice_mailer_new/setting.dart';
 
 class SavedRecordings extends StatefulWidget {
+  const SavedRecordings({super.key});
+
   @override
-  SavedRecordingsState createState() => SavedRecordingsState();
+  State<SavedRecordings> createState() => SavedRecordingsState();
 }
 
 class SavedRecordingsState extends State<SavedRecordings> {
@@ -33,24 +35,28 @@ class SavedRecordingsState extends State<SavedRecordings> {
     super.initState();
     listAudioFiles();
     setupAudioPlayer();
-    get_email();
+    getEmail();
   }
 
-  void get_email() async {
+  void getEmail() async {
     prefs = await SharedPreferences.getInstance();
-    setState(() {
-      givenEmail = prefs.getString('email') ?? 'Enter Email';
-    });
+    if (mounted) {
+      setState(() {
+        givenEmail = prefs.getString('email') ?? 'Enter Email';
+      });
+    }
   }
 
   void setupAudioPlayer() {
     audioPlayer.playerStateStream.listen((state) {
-      setState(() {
-        isPlaying = state.playing;
-        if (state.processingState == ProcessingState.completed) {
-          playingFile = null;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          isPlaying = state.playing;
+          if (state.processingState == ProcessingState.completed) {
+            playingFile = null;
+          }
+        });
+      }
     });
   }
 
@@ -84,13 +90,15 @@ class SavedRecordingsState extends State<SavedRecordings> {
             });
           }
         }
-        setState(() {
-          audioFiles = m4aFiles;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            audioFiles = m4aFiles;
+            _isLoading = false;
+          });
+        }
       }
     } catch (e) {
-      print("Error listing audio files: $e");
+      debugPrint("Error listing audio files: $e");
     }
   }
 
@@ -102,7 +110,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
       await player.dispose(); // Dispose the player after getting the duration
       return duration;
     } catch (e) {
-      print("Error getting audio duration: $e");
+      debugPrint("Error getting audio duration: $e");
       return null;
     }
   }
@@ -119,47 +127,57 @@ class SavedRecordingsState extends State<SavedRecordings> {
     try {
       if (isPlaying && playingFile == file) {
         await audioPlayer.pause();
-        setState(() {
-          isPlaying = false;
-        });
-      } else {
-        if (playingFile != file) {
+        if (mounted) {
           setState(() {
-            playingFile = file;
             isPlaying = false;
           });
+        }
+      } else {
+        if (playingFile != file) {
+          if (mounted) {
+            setState(() {
+              playingFile = file;
+              isPlaying = false;
+            });
+          }
           await audioPlayer.setFilePath(file.path);
         }
         await audioPlayer.play();
-        setState(() {
-          isPlaying = true;
-          playingFile = file;
-        });
+        if (mounted) {
+          setState(() {
+            isPlaying = true;
+            playingFile = file;
+          });
+        }
       }
 
       // Listen to the player state stream
       audioPlayer.playerStateStream.listen((playerState) {
         if (playerState.processingState == ProcessingState.completed) {
-          setState(() {
-            isPlaying = false;
-            playingFile = null; // or keep it as is based on your needs
-          });
+          if (mounted) {
+            setState(() {
+              isPlaying = false;
+              playingFile = null; // or keep it as is based on your needs
+            });
+          }
         }
       });
     } catch (e) {
-      print("Error playing/pausing audio: $e");
+      debugPrint("Error playing/pausing audio: $e");
     }
   }
 
   Future<void> stopAudio() async {
     try {
       await audioPlayer.stop();
-      setState(() {
-        isPlaying = false;
-        playingFile = null;
-      });
+      if (mounted) {
+        setState(() {
+          isPlaying = false;
+          playingFile = null;
+        });
+      }
     } catch (e) {
-      print("Error stopping audio: $e");
+      debugPrint("Error stopping audio: $e");
     }
   }
 
@@ -170,7 +188,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
   }
 
   Future<void> _sendEmailWithAttachment(
-      String filePath, String transcript) async {
+      String filePath, String transcript, BuildContext context) async {
     String fileName = filePath.split('/').last;
     int dotIndex = fileName.indexOf('.');
     String result =
@@ -190,32 +208,38 @@ class SavedRecordingsState extends State<SavedRecordings> {
 
     try {
       await FlutterEmailSender.send(email);
-      print('Email sent');
+      debugPrint('Email sent');
 
       // Attempt to delete the file after invoking the email client
       // final file = File(filePath);
       // if (await file.exists()) {
       //   await file.delete();
-      //   print('Recording deleted');
+      //   debugPrint('Recording deleted');
       // }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Email sent successfully'),
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Email sent successfully'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      print('Error sending email: $e');
+      debugPrint('Error sending email: $e');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('An Error Occured. The Recording is saved'),
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An Error Occured. The Recording is saved'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -236,7 +260,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     'Recent Recordings',
                     style: TextStyle(
@@ -244,7 +268,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
                       fontSize: 20,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Expanded(
                     child: ListView.builder(
                       itemCount: audioFiles.length,
@@ -263,12 +287,17 @@ class SavedRecordingsState extends State<SavedRecordings> {
                           key: UniqueKey(),
                           direction: DismissDirection.endToStart,
                           onDismissed: (direction) async {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Sending $audioFileName and $txtFileName via email...'),
-                              ),
-                            );
+                            final scaffoldContext = context;
+                            if (mounted) {
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(scaffoldContext)
+                                  .showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Sending $audioFileName and $txtFileName via email...'),
+                                ),
+                              );
+                            }
                             // String filePath =
                             //     await getExternalStorageDirectory().toString() +
                             //         audioFiles[index].toString();
@@ -276,24 +305,30 @@ class SavedRecordingsState extends State<SavedRecordings> {
                                 await Connectivity().checkConnectivity();
 
                             if (!(result == ConnectivityResult.none)) {
-                              print('Valid Internet Connection');
+                              debugPrint('Valid Internet Connection');
                               _sendEmailWithAttachment(
-                                  audioFile.path.toString(), transcript);
+                                  audioFile.path.toString(),
+                                  transcript,
+                                  scaffoldContext);
                             } else {
-                              print(result);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      'No Internet. The Recording has been saved.'),
-                                  duration: const Duration(seconds: 2),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
+                              debugPrint(result.toString());
+                              if (mounted) {
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(scaffoldContext)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'No Internet. The Recording has been saved.'),
+                                    duration: const Duration(seconds: 2),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
                             }
                           },
                           background: Container(
                             color: Colors.blue,
-                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             alignment: Alignment.centerRight,
                             child: Icon(
                               Icons.email,
@@ -312,7 +347,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Duration: $durationString'),
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                   Text('Transcript: $transcript'),
                                 ],
                               ),
@@ -350,7 +385,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
           if (index == 0) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
               (Route<dynamic> route) => false, // Remove all previous routes
             );
           } else if (index == 1) {
@@ -358,7 +393,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
           } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SettingsScreen()),
+              MaterialPageRoute(builder: (context) => const SettingsScreen()),
             );
           }
         },

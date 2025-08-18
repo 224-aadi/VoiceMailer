@@ -8,11 +8,11 @@ class ChangeEmail extends StatefulWidget {
 
   final String email;
 
-  //late final String givenEmail;
-  _ChangeEmail createState() => _ChangeEmail();
+  @override
+  State<ChangeEmail> createState() => _ChangeEmailState();
 }
 
-class _ChangeEmail extends State<ChangeEmail> {
+class _ChangeEmailState extends State<ChangeEmail> {
   TextEditingController email = TextEditingController();
   late SharedPreferences prefs;
   late String givenEmail;
@@ -20,18 +20,22 @@ class _ChangeEmail extends State<ChangeEmail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    get_email();
+    getEmail();
   }
 
-  void get_email() async {
+  void getEmail() async {
     prefs = await SharedPreferences.getInstance();
-    setState(() {
-      givenEmail = prefs.getString('email') ?? 'Enter Email';
-    });
+    if (mounted) {
+      setState(() {
+        givenEmail = prefs.getString('email') ?? 'Enter Email';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Change Email'),
@@ -47,9 +51,9 @@ class _ChangeEmail extends State<ChangeEmail> {
           children: [
             Container(
               padding: EdgeInsets.only(
-                  left: (MediaQuery.of(context).size.width / 14),
-                  right: (MediaQuery.of(context).size.width / 14),
-                  top: (MediaQuery.of(context).size.width / 6)),
+                  left: (screenWidth / 14),
+                  right: (screenWidth / 14),
+                  top: (screenWidth / 6)),
               alignment: Alignment.center,
               child: TextField(
                 controller: email,
@@ -68,13 +72,15 @@ class _ChangeEmail extends State<ChangeEmail> {
             ),
             Container(
               alignment: Alignment.center,
-              padding: EdgeInsets.only(
-                  top: (MediaQuery.of(context).size.width / 3.2)),
+              padding: EdgeInsets.only(top: (screenWidth / 3.2)),
               child: ElevatedButton(
                 onPressed: () async {
                   prefs = await SharedPreferences.getInstance();
                   prefs.setString('email', email.text.toString());
-                  Navigator.of(context).pop();
+                  if (mounted) {
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.fromLTRB(9, 9, 9, 9),

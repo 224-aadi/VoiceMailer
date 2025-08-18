@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -34,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
   double _maxAmplitude = 1.0;
   bool _isRecording = false;
   // String? _recordingPath;
-  String _debugText = '';
   late SharedPreferences prefs;
   late String givenEmail;
   bool _isGenerating = false;
@@ -68,13 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _checkPermission() async {
     if (!await record.hasPermission()) {
-      setState(() {
-        _debugText = 'Microphone permission not granted';
-      });
+      // Permission not granted - no need to set debug text
     } else {
-      setState(() {
-        _debugText = 'Microphone permission granted';
-      });
+      // Permission granted - no need to set debug text
     }
   }
 
@@ -99,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
           _isRecording = true;
           _amplitudeHistory.clear();
           _maxAmplitude = 1.0;
-          _debugText = 'Recording started';
           _recognitionResult = '';
         });
 
@@ -125,15 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           }
         });
-      } else {
-        setState(() {
-          _debugText = 'Recording permission not granted';
-        });
       }
     } catch (e) {
-      setState(() {
-        _debugText = 'Error starting recording: $e';
-      });
+      // Error starting recording
     }
   }
 
@@ -148,12 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
       _recognizeSpeech(wavPath.toString(), timeOfPath);
       setState(() {
         _isRecording = false;
-        _debugText = 'Recording stopped. File saved at: $path';
       });
     } catch (e) {
-      setState(() {
-        _debugText = 'Error stopping recording: $e';
-      });
+      // Error stopping recording
     }
   }
 
@@ -167,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (result == 0) {
       return wavPath;
     } else {
-      print('Error converting file: $result');
+      debugPrint('Error converting file: $result');
       return null;
     }
   }
@@ -176,14 +161,16 @@ class _HomeScreenState extends State<HomeScreen> {
     // Check internet connectivity
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'No internet connection. Please check your network settings.'),
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'No internet connection. Please check your network settings.'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       setState(() {
         _isGenerating = false;
       });
@@ -197,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final bytes = File(filePath).readAsBytesSync();
     final url = Uri.parse(
-        'https://${_azureRegion}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-IN');
+        'https://$_azureRegion.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-IN');
 
     try {
       final response = await http.post(
@@ -212,22 +199,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        setState(() {
-          _isGenerating = false;
-          _recognitionResult = data['DisplayText'] ?? 'No text recognized';
-          saveTranscription(time);
-          _sendEmailWithAttachment(filePath.toString());
-        });
+        if (mounted) {
+          setState(() {
+            _isGenerating = false;
+            _recognitionResult = data['DisplayText'] ?? 'No text recognized';
+            saveTranscription(time);
+            _sendEmailWithAttachment(filePath.toString());
+          });
+        }
       } else {
-        setState(() {
-          _recognitionResult = 'Recognition failed: ${response.body}';
-        });
+        if (mounted) {
+          setState(() {
+            _recognitionResult = 'Recognition failed: ${response.body}';
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        _isGenerating = false;
-        _recognitionResult = 'An error occurred: $e';
-      });
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+          _recognitionResult = 'An error occurred: $e';
+        });
+      }
     }
   }
 
@@ -258,33 +251,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       await FlutterEmailSender.send(email);
-      print('Email sent');
+      debugPrint('Email sent');
 
       // Attempt to delete the file after invoking the email client
       //DELETE THE .M4A, wav and txt file
       // final file = File(filePath);
       // if (await file.exists()) {
       //   await file.delete();
-      //   print('Recording deleted');
+      //   debugPrint('Recording deleted');
       // }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Email sent successfully'),
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Email sent successfully'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      print('Error sending email: $e');
+      debugPrint('Error sending email: $e');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('An Error Occured. The Recording is saved'),
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An Error Occured. The Recording is saved'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -305,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Welcome to VoiceMailer',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               _isRecording
                   ? Container(
                       height: 200,
@@ -315,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : Container(),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isRecording ? _stopRecording : _startRecording,
                 style: ElevatedButton.styleFrom(
@@ -328,8 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child:
                     Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
               ),
-              SizedBox(height: 16),
-              // Text(_debugText, style: TextStyle(color: Colors.red)),
+              const SizedBox(height: 16),
               _isGenerating
                   ? Card(
                       elevation: 4.0,
@@ -347,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             _isGenerating
                                 ? CircularProgressIndicator()
                                 : Container(),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
                               _recognitionResult,
                               textAlign: TextAlign
@@ -379,12 +375,12 @@ class _HomeScreenState extends State<HomeScreen> {
           } else if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SavedRecordings()),
+              MaterialPageRoute(builder: (context) => const SavedRecordings()),
             );
           } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SettingsScreen()),
+              MaterialPageRoute(builder: (context) => const SettingsScreen()),
             );
           }
         },
@@ -410,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
 class BarcodeWaveformPainter extends CustomPainter {
   final List<double> amplitudes;
 
-  BarcodeWaveformPainter(this.amplitudes);
+  const BarcodeWaveformPainter(this.amplitudes);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -489,13 +485,11 @@ import 'package:azure_cognitiveservices_speech/azure_cognitiveservices_speech.da
     });
 
     _speechRecognizer.recognized.listen((event) {
-      setState(() {
-        _recognitionResult += event.result.text + " ";
-      });
+      _recognitionResult += event.result.text + " ";
     });
   }
 
-  
+   
   Future<void> _startRecording() async {
     SAME AS BEFORE
 
@@ -503,7 +497,6 @@ import 'package:azure_cognitiveservices_speech/azure_cognitiveservices_speech.da
           _isRecording = true;
           _amplitudeHistory.clear();
           _maxAmplitude = 1.0;
-          _debugText = 'Recording started';
           _recognitionResult = '';
         });
 
@@ -545,4 +538,4 @@ import 'package:azure_cognitiveservices_speech/azure_cognitiveservices_speech.da
       await _speechRecognizer.stopContinuousRecognitionAsync();
   }
 }
- */
+*/
