@@ -24,7 +24,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getEmail();
   }
