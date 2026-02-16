@@ -8,7 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load environment variables from .env file
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
   runApp(MyApp(savedThemeMode: savedThemeMode));
