@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_audio/return_code.dart';
+import 'package:ffmpeg_kit_flutter_new_min_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new_min_gpl/return_code.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:voice_mailer_new/saved.dart';
@@ -61,7 +61,14 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       if (isRecording) {
         // Stop Recording
-        final path = await recorderController.stop(false);
+        debugPrint("Attempting to stop recording...");
+        String? path;
+        try {
+          path = await recorderController.stop(false);
+          debugPrint("Stop recording returned path: $path");
+        } catch (stopError) {
+          debugPrint("Error stopping recorder: $stopError");
+        }
         
         setState(() {
           isRecording = false;
@@ -116,25 +123,32 @@ class _HomeScreenState extends State<HomeScreen> {
                await _sendEmailWithAttachment(wavPath, transcript);
             }
 
+          } else {
+             debugPrint("File does not exist at path: $path");
           }
+        } else {
+           debugPrint("Path was null after stopping recorder.");
         }
       } else {
         // Start Recording
+        debugPrint("Checking permissions...");
         final status = await recorderController.checkPermission();
         if (status) {
           String time2 = DateTime.now().millisecondsSinceEpoch.toString();
           String newPath = await _getDir(time2);
+          debugPrint("Starting recording to path: $newPath");
           
           await recorderController.record(path: newPath);
            setState(() {
             isRecording = true;
           });
+          debugPrint("Recording started.");
         } else {
           debugPrint("No permission to record");
         }
       }
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("General error in _startOrStopRecording: $e");
       setState(() {
         isRecording = false;
       });

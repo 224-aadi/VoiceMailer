@@ -7,7 +7,7 @@ import Foundation
 
 import audio_session
 import connectivity_plus
-import ffmpeg_kit_flutter_audio
+import ffmpeg_kit_flutter_new_min_gpl
 import flutter_sound
 import just_audio
 import path_provider_foundation
