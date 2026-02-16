@@ -87,11 +87,26 @@ class _HomeScreenState extends State<HomeScreen> {
             await _convertM4aToWav(path, wavPath);
             
             // Transcribe
+            // Transcribe
             String transcript = "No transcript available";
-            final connectivityResult = await Connectivity().checkConnectivity();
+            var connectivityResult = await Connectivity().checkConnectivity();
             
-            if (connectivityResult != ConnectivityResult.none) {
-               ScaffoldMessenger.of(context).showSnackBar(
+            if (connectivityResult.contains(ConnectivityResult.none)) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("No Internet Connection. Saved without sending.")),
+                );
+              }
+              // Save default transcript
+              final String txtPath = path.replaceAll('.m4a', '.txt'); 
+              final File txtFile = File(txtPath);
+              await txtFile.writeAsString(transcript);
+              return; // Exit early
+            }
+            
+            // If connected, proceed with transcription
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Transcribing audio...')),
               );
               
@@ -103,24 +118,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   debugPrint("Transcript: $transcript");
                 }
               }
-            } else {
-               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('No Internet. Saved without transcript.'),
-                  backgroundColor: Colors.red,
-                ),
-              );
             }
             
-            // Save transcript to .txt file
+            // Save transcript
             final String txtPath = path.replaceAll('.m4a', '.txt'); 
-            
             final File txtFile = File(txtPath);
             await txtFile.writeAsString(transcript);
             
-            // Attempt to send email with the WAV file (more compatible) and Transcript
-            if (connectivityResult != ConnectivityResult.none) {
+            // Send email
+            if (!connectivityResult.contains(ConnectivityResult.none)) {
                await _sendEmailWithAttachment(wavPath, transcript);
+               if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Recording sent to email!")),
+                  );
+               }
             }
 
           } else {

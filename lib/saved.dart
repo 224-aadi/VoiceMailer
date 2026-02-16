@@ -307,14 +307,16 @@ class SavedRecordingsState extends State<SavedRecordings> {
                             var result =
                                 await Connectivity().checkConnectivity();
 
-                            if (!(result == ConnectivityResult.none)) {
+                            if (!result.contains(ConnectivityResult.none)) {
                               debugPrint('Valid Internet Connection');
-                              // ignore: use_build_context_synchronously
-                              _sendEmailWithAttachment(
-                                  audioFile.path.toString(),
-                                  transcript,
-                                  // ignore: use_build_context_synchronously
-                                  scaffoldContext);
+                              if (mounted) {
+                                // ignore: use_build_context_synchronously
+                                _sendEmailWithAttachment(
+                                    audioFile.path.toString(),
+                                    transcript,
+                                    // ignore: use_build_context_synchronously
+                                    scaffoldContext);
+                              }
                             } else {
                               debugPrint(result.toString());
                               if (mounted) {

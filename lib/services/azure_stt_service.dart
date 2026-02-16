@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'package:voice_mailer_new/config/env.dart';
 
 class AzureSttService {
@@ -54,10 +55,10 @@ class AzureSttService {
           return data['DisplayText'];
         }
       } else {
-        print('Azure STT Error: ${response.statusCode} - ${response.body}');
+        debugPrint('Azure STT Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Error calling Azure STT: $e');
+      debugPrint('Error calling Azure STT: $e');
     }
     return null;
   }
