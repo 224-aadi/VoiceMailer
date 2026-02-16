@@ -69,11 +69,14 @@ class SavedRecordingsState extends State<SavedRecordings> {
         // List<Map<String, dynamic>> txtFiles = [];
 
         for (FileSystemEntity file in files) {
-          if (file is File && file.path.endsWith('.wav')) {
+          if (file is File && (file.path.endsWith('.wav') || file.path.endsWith('.m4a'))) {
             Duration? duration = await _getAudioDuration(file);
 
             // Load the corresponding .txt file
-            String txtFilePath = file.path.replaceAll('.wav', '.txt');
+            String txtFilePath = file.path.endsWith('.wav') 
+                ? file.path.replaceAll('.wav', '.txt')
+                : file.path.replaceAll('.m4a', '.txt');
+                
             String? txtContent;
             if (File(txtFilePath).existsSync()) {
               txtContent = await File(txtFilePath).readAsString();
@@ -81,7 +84,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
               txtContent = 'No transcript available';
             }
 
-            // Add both the .wav and .txt files to the list
+            // Add both the audio and .txt files to the list
             m4aFiles.insert(0, {
               'audioFile': file,
               'duration': duration,
