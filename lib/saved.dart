@@ -69,7 +69,7 @@ class SavedRecordingsState extends State<SavedRecordings> {
         // List<Map<String, dynamic>> txtFiles = [];
 
         for (FileSystemEntity file in files) {
-          if (file is File && (file.path.endsWith('.wav') || file.path.endsWith('.m4a'))) {
+          if (file is File && file.path.endsWith('.m4a')) {
             Duration? duration = await _getAudioDuration(file);
 
             // Load the corresponding .txt file
