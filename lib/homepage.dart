@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:voice_mailer_new/saved.dart';
 import 'package:voice_mailer_new/setting.dart';
 import 'package:voice_mailer_new/services/azure_stt_service.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,11 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _initialiseControllers() {
-    recorderController = RecorderController()
-      ..androidEncoder = AndroidEncoder.aac
-      ..androidOutputFormat = AndroidOutputFormat.mpeg4
-      ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
-      ..sampleRate = 44100;
+    recorderController = RecorderController();
   }
 
   @override
@@ -124,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         // Start Recording
         final status = await recorderController.checkPermission();
-        if (status.hasPermission) {
+        if (status) {
           String time2 = DateTime.now().millisecondsSinceEpoch.toString();
           String newPath = await _getDir(time2);
           
