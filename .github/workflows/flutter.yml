@@ -19,6 +19,9 @@ jobs:
         flutter-version: '3.24.0'
         channel: 'stable'
     
+    - name: Create Env File
+      run: cp assets/env.example assets/env
+
     - name: Install dependencies
       run: flutter pub get
     
