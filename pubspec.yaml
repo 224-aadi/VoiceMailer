@@ -47,7 +47,7 @@ dependencies:
   adaptive_theme: ^3.6.0
   flutter_audio_waveforms: ^1.2.1+8
   ffmpeg_kit_flutter_new_min_gpl: ^2.1.1
-  connectivity_plus:
+  connectivity_plus: ^6.0.0
   azblob:
   resumable_upload:
   flutter_launcher_icons:
