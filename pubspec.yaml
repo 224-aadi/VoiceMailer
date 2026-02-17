@@ -47,7 +47,7 @@ dependencies:
   resumable_upload:
   flutter_launcher_icons:
   http:
-  speech_to_text:
+
   audio_waveforms:
   rename_app:
   flutter_dotenv: ^6.0.0
